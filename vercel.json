@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/api_handler.php",
+      "destination": "/api/handler"
+    },
+    {
+      "source": "/api/handler.js",
+      "destination": "/api/handler"
+    }
+  ]
+}
