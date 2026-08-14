@@ -4,7 +4,6 @@ const BASE_URL = 'https://oathnet.org/api';
 async function oathFetch(endpoint, method = 'GET', body = null, params = {}) {
   let url = BASE_URL.replace(/\/$/, '') + '/' + endpoint.replace(/^\//, '');
   
-  // Clean up empty params
   const cleanParams = {};
   for (const [k, v] of Object.entries(params)) {
     if (v !== null && v !== undefined && v !== '') {
@@ -42,7 +41,7 @@ async function oathFetch(endpoint, method = 'GET', body = null, params = {}) {
   }
 }
 
-module.exports = async function handler(req, res) {
+module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
@@ -93,7 +92,6 @@ module.exports = async function handler(req, res) {
       const qParams = { q: query };
       if (searchId) qParams.search_id = searchId;
 
-      // 1. Try V2 endpoints
       let [stealerRes, breachRes] = await Promise.all([
         oathFetch('/service/v2/stealer/search', 'GET', null, qParams),
         oathFetch('/service/v2/breach/search', 'GET', null, qParams)
@@ -102,7 +100,6 @@ module.exports = async function handler(req, res) {
       let stealerItems = stealerRes?.data?.items || stealerRes?.data?.results || (Array.isArray(stealerRes?.data) ? stealerRes.data : []);
       let breachItems = breachRes?.data?.items || breachRes?.data?.results || (Array.isArray(breachRes?.data) ? breachRes.data : []);
 
-      // 2. Fallback to V1 endpoints if V2 returns empty
       if (stealerItems.length === 0) {
         const v1Stealer = await oathFetch('/service/search-stealer', 'GET', null, qParams);
         stealerItems = v1Stealer?.data?.results || v1Stealer?.data?.items || v1Stealer?.results || (Array.isArray(v1Stealer?.data) ? v1Stealer.data : []);
@@ -153,7 +150,6 @@ module.exports = async function handler(req, res) {
       return res.status(200).json(pbRes);
     }
 
-    // Default fallback query
     let fallbackRes = await oathFetch('/service/v2/stealer/search', 'GET', null, { q: query });
     if (!fallbackRes?.data) {
       fallbackRes = await oathFetch('/service/search-stealer', 'GET', null, { q: query });

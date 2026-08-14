@@ -1,0 +1,10 @@
+{
+  "name": "oathflix-osint",
+  "version": "1.0.0",
+  "description": "OathFlix OSINT Studio",
+  "main": "api/handler.js",
+  "scripts": {
+    "start": "node api/handler.js"
+  },
+  "dependencies": {}
+}
